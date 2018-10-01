@@ -1,7 +1,5 @@
 import java.util.Arrays;
-/**
- * Array based storage for Resumes
- */
+
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
     int size = 0;
@@ -11,36 +9,62 @@ public class ArrayStorage {
         size = 0;
     }
 
-    void save(Resume r) {
-        if (size < storage.length) {
-            storage[size] = r;
+    void save(Resume resume) {
+        if (getIndex(resume.getUuid()) != -1) {
+            System.out.println("Такое резюме уже хранится в базе");
+        } else if (size == storage.length) {
+            System.out.println("Все места заняты");
+        } else if (size < storage.length) {
+            storage[size] = resume;
             size++;
         }
     }
 
-    Resume get(String uuid) {
-        for (int i = 0; i < size; i++) {
-            if (storage[i].uuid == uuid)
-                return storage[i];
+
+    void update(Resume r) {
+        int i = getIndex(r.getUuid());
+        if (i == -1) {
+            System.out.println("Такого резюме не существует.");
+        } else {
+            storage[i] = r;
         }
-        return null;
     }
 
-    void delete(String uuid) {
+    Resume get(String uuid) {
+        int i = getIndex(uuid);
+        if (i == -1) {
+            System.out.println("Такого резюме не существует.");
+            return null;
+        } else {
+            return storage[i];
+        }
+    }
+
+    private int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
-            if (storage[i].uuid.equals(uuid)) {
-                storage[i] = storage[size - 1];
-                storage[size - 1] = null;
-                size--;
-                return;
+            if (storage[i].getUuid().equals(uuid)) {
+                return i;
             }
         }
+        return -1;
     }
 
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
+
+    void delete(String uuid) {
+        int i = getIndex(uuid);
+        if (i == -1) {
+            System.out.println("Такого резюме не существует.");
+        } else {
+            storage[i] = storage[size - 1];
+            storage[size - 1] = null;
+            size--;
+        }
+
+    }
+
+
+
     Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
